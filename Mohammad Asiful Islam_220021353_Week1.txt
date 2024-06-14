@@ -1,0 +1,99 @@
+Microcontroller section:
+1. Code:
+
+Rover:
+include SPI
+include nrf2401.lib
+define drillpin 0
+radio(pin1,pin2);
+const address[6]="00001"
+define sensorpin A0
+setup(){
+begin_serial(9600)
+begin_radio()
+openwritingpipe()
+startwriting()
+}
+loop(){
+reading=read_sensor
+temp=(reading-0.5)*100
+write_radio(temp)
+if(temp>100){
+digital_write(drill_pin,LOW)
+}
+delay(60)
+}
+
+
+Station:
+include SPI
+include nrf2401.lib
+define temp
+radio(pin1,pin2);
+const address[6]="00001"
+define sensorpin A0
+setup(){
+begin_serial(9600)
+begin_radio()
+openreadingpipe()
+startlistening()
+
+}
+loop(){
+if (radio_available){
+read_radio(temp)
+serial_print("temperature:")
+serial_print(temp)
+delay(60)
+}
+}
+
+
+2. 
+#define enable 5
+#define input1 7
+#define input2 8
+#define enA 2
+#define enB 3
+
+int count = 0;
+
+
+void setup() {
+  pinMode(enable, OUTPUT);
+  pinMode(input1, OUTPUT);
+  pinMode(input2, OUTPUT);
+  pinMode(enA, INPUT);
+  pinMode(enB, INPUT);
+  digitalWrite(enA, HIGH);
+  digitalWrite(enB, HIGH);
+
+
+  attachInterrupt(digitalPinToInterrupt(enA), Encoder, RISING);
+
+  Serial.begin(9600);
+}
+
+void loop() {
+  rotateMotor(-360);
+  delay(100);
+  rotateMotor(-360);
+  delay(100);
+  rotateMotor(270);
+  delay(100);
+  Serial.print("Angle:");
+  Serial.print(count);
+  
+}
+
+
+
+void Encoder() {
+  int a = digitalRead(enA);
+  if(a > 0){
+    count++;
+  }
+  else{
+    count--;
+  }
+}
