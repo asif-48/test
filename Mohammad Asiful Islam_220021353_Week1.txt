@@ -83,7 +83,7 @@ void loop() {
   delay(100);
   Serial.print("Angle:");
   Serial.print(count);
-  
+  Encoder();
 }
 
 
